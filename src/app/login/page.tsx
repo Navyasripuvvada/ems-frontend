@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   email: string;
@@ -9,6 +10,8 @@ type FormData = {
 };
 
 export default function LoginPage() {
+  const router = useRouter(); // ✅ inside component
+
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -35,28 +38,25 @@ export default function LoginPage() {
 
       console.log("Login Success:", response.data);
 
-      // Store token
       localStorage.setItem("token", response.data.token);
 
-      // ✅ Get user from backend response
       const role = response.data.role;
 
-alert(
-  role === "admin"
-    ? "Welcome Admin 👑"
-    : "Welcome Employee 👨‍💼"
-);
+      alert(
+        role === "admin"
+          ? "Welcome Admin 👑"
+          : "Welcome Employee 👨‍💼"
+      );
 
-      // Optional: Redirect
-      // if (user.role === "admin") {
-      //   router.push("/admin/dashboard");
-      // } else {
-      //   router.push("/employee/dashboard");
-      // }
+      // ✅ Proper routing based on role
+      if (role === "admin") {
+        router.push("/dashboard");
+      } else {
+        router.push("/employee/dashboard");
+      }
 
     } catch (err: any) {
       console.log("Login Error:", err);
-
       setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -65,14 +65,19 @@ alert(
 
   return (
     <div className="min-h-screen flex">
-      
-      {/* LEFT SIDE - FORM */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-10 bg-gray-50">
+
+      {/* LEFT SIDE */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-10 bg-gray-100">
         <div className="max-w-md w-full mx-auto">
 
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            EMS Portal
-          </h1>
+          {/* LOGO */}
+          <div className="mb-8 flex justify-center">
+            <img
+              src="/logo.jpeg"
+              alt="EMS Logo"
+              className="w-12 h-12 object-contain"
+            />
+          </div>
 
           <p className="text-gray-500 mb-6">
             Login to access your dashboard
@@ -117,32 +122,31 @@ alert(
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="hidden md:flex w-1/2 relative items-center justify-center text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-700 to-purple-700"></div>
+      <div className="hidden md:flex w-1/2 relative">
 
-        <div className="relative z-10 max-w-md text-center space-y-8 px-6">
+        <img
+          src="/ems1.jpeg"
+          alt="login visual"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/40"></div>
+
+        <div className="relative z-10 flex h-full w-full items-center justify-center text-center text-white px-10">
+
           <div>
-            <h1 className="text-xl font-semibold">Role-Based Access</h1>
-            <p className="text-sm text-gray-200">
-              Admins manage employees, users access personal dashboards.
+            <h1 className="text-3xl font-bold mb-4">
+              Welcome to EMS
+            </h1>
+
+            <p className="text-sm text-gray-200 max-w-sm mx-auto">
+              Manage employees, track performance, and handle operations efficiently.
             </p>
           </div>
 
-          <div>
-            <h1 className="text-xl font-semibold">Employee Management</h1>
-            <p className="text-sm text-gray-200">
-              Track employee data, roles, and performance efficiently.
-            </p>
-          </div>
-
-          <div>
-            <h1 className="text-xl font-semibold">Secure System</h1>
-            <p className="text-sm text-gray-200">
-              Authentication ensures protected access to company data.
-            </p>
-          </div>
         </div>
       </div>
+
     </div>
   );
 }
