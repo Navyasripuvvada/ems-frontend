@@ -175,11 +175,11 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-          <div className="mt-4 border-t border-slate-50 pt-4 text-right">
+          {/* <div className="mt-4 border-t border-slate-50 pt-4 text-right">
             <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
               View Leave Details
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* My Attendance Calendar Panel */}
@@ -243,9 +243,6 @@ export default function DashboardPage() {
                 <span className="h-2 w-2 rounded-full bg-emerald-500"></span> Present
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-rose-500"></span> Absent
-              </div>
-              <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-amber-400"></span> Half Day
               </div>
               <div className="flex items-center gap-1.5">
@@ -254,11 +251,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="text-right mt-4 pt-2">
+          {/* <div className="text-right mt-4 pt-2">
             <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
               View Attendance
             </button>
-          </div>
+          </div> */}
         </div>
 
       </div>

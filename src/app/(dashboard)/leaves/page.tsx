@@ -1,218 +1,262 @@
-'use client';
+"use client";
 
-import React from 'react';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-export default function LeaveRequestsDashboard() {
+const BASE_URL = "http://localhost:5000/leave/admin";
+
+/* ---------------- AUTH HEADER ---------------- */
+const getAuthHeader = () => {
+  if (typeof window === "undefined") return {};
+
+  const token = localStorage.getItem("token");
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
+
+/* ---------------- TYPES ---------------- */
+type EmployeeDetails = {
+  email?: string;
+  role?: string;
+};
+
+type Leave = {
+  _id: string;
+  reason?: string;
+  fromDate?: string;
+  toDate?: string;
+  Leavestatus?: string;
+  adminComment?: string;
+  employeeDetails?: EmployeeDetails;
+};
+
+export default function LeaveRequestsPage() {
+  const [leaves, setLeaves] = useState<Leave[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [activeTab, setActiveTab] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
+  const [search, setSearch] = useState("");
+  const [leaveType, setLeaveType] = useState("all");
+
+  /* ---------------- FETCH LEAVES ---------------- */
+  const fetchLeaves = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/all`, getAuthHeader());
+
+      const leavesData: Leave[] =
+        res.data?.data || res.data?.leaves || res.data || [];
+
+      console.log("API RESPONSE:", res.data);
+
+      setLeaves(Array.isArray(leavesData) ? leavesData : []);
+    } catch (err: any) {
+      console.error("Fetch error:", err);
+
+      if (err.response?.status === 403) {
+        alert("Access denied: Admin only");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
+
+  /* ---------------- UPDATE STATUS ---------------- */
+  const updateStatus = async (
+    id: string,
+    status: "approved" | "rejected"
+  ) => {
+    try {
+      await axios.put(
+        `${BASE_URL}/${id}/status`,
+        { Leavestatus: status },
+        getAuthHeader()
+      );
+
+      setLeaves((prev) =>
+        prev.map((leave) =>
+          leave._id === id
+            ? { ...leave, Leavestatus: status }
+            : leave
+        )
+      );
+    } catch (err: any) {
+      console.error("Update error:", err);
+
+      if (err.response?.status === 403) {
+        alert("Only admin can update status");
+      }
+    }
+  };
+
+  /* ---------------- FORMAT DATE ---------------- */
+  const formatDate = (date?: string) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString();
+  };
+
+  /* ---------------- STATUS STYLE ---------------- */
+  const getStatusStyle = (status?: string) => {
+    const s = status?.toLowerCase() || "";
+
+    switch (s) {
+      case "approved":
+        return "bg-green-100 text-green-600";
+      case "rejected":
+        return "bg-red-100 text-red-600";
+      default:
+        return "bg-yellow-100 text-yellow-600";
+    }
+  };
+
+  /* ---------------- FILTER LOGIC ---------------- */
+  const filteredLeaves = leaves.filter((leave) => {
+    const status = leave.Leavestatus?.toLowerCase() || "";
+
+    const matchesTab =
+      activeTab === "all" || status === activeTab;
+
+    const email = leave.employeeDetails?.email || "";
+
+    const matchesSearch = email
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    return matchesTab && matchesSearch;
+  });
+
   return (
-    <div className="w-full min-h-screen bg-gray-50/50 p-6 sm:p-10 font-sans">
-      {/* Breadcrumb & Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Leave Requests</h1>
-        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-          <span>Dashboard</span>
-          <span>&gt;</span>
-          <span className="text-gray-400">Leave Requests</span>
-        </div>
-      </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Leave Requests</h1>
 
-      {/* Navigation Tabs (Hardcoded Active State on 'All') */}
-      <div className="flex border-b border-gray-200 mb-6 gap-2">
-        {['All', 'Pending', 'Approved', 'Rejected'].map((tab, idx) => (
+      {/* ---------------- TABS ---------------- */}
+      <div className="flex gap-4 mb-4">
+        {["all", "pending", "approved", "rejected"].map((tab) => (
           <button
             key={tab}
-            className={`px-5 py-2.5 text-sm font-medium relative top-[1px] ${
-              idx === 0
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+            onClick={() =>
+              setActiveTab(
+                tab as "all" | "pending" | "approved" | "rejected"
+              )
+            }
+            className={`px-4 py-2 rounded ${
+              activeTab === tab
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200"
             }`}
           >
-            {tab}
+            {tab.toUpperCase()}
           </button>
         ))}
       </div>
 
-      {/* Main Card Container */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        
-        {/* Filters Panel */}
-        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="Search employee..."
-              className="w-full pl-3 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-            />
-          </div>
+      {/* ---------------- FILTER BAR ---------------- */}
+      <div className="flex gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search employee..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border px-3 py-2 rounded w-1/3"
+        />
 
-          {/* Leave Type Dropdown */}
-          <div className="relative">
-            <select className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-10 py-2 text-sm focus:outline-none focus:border-blue-500 cursor-pointer text-gray-700">
-              <option>All Leave Types</option>
-              <option>Sick Leave</option>
-              <option>Casual Leave</option>
-              <option>Annual Leave</option>
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        <select
+          value={leaveType}
+          onChange={(e) => setLeaveType(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="all">All Leave Types</option>
+          <option value="sick">Sick Leave</option>
+          <option value="casual">Casual Leave</option>
+        </select>
+      </div>
 
-        {/* Data Table Container */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-4">Employee</th>
-                <th className="px-6 py-4">Leave Type</th>
-                <th className="px-6 py-4">From</th>
-                <th className="px-6 py-4">To</th>
-                <th className="px-6 py-4">Reason</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right pr-10">Actions</th>
+      {/* ---------------- TABLE ---------------- */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {loading ? (
+          <p className="p-4">Loading...</p>
+        ) : (
+          <table className="w-full text-left">
+            <thead className="bg-gray-100 text-sm">
+              <tr>
+                <th className="p-3">Employee</th>
+                <th className="p-3">Leave Type</th>
+                <th className="p-3">From</th>
+                <th className="p-3">To</th>
+                <th className="p-3">Reason</th>
+                <th className="p-3">Status</th>
+                <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50 text-sm text-gray-700">
-              
-              {/* Row 1: Pending Sick Leave */}
-              <tr className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-semibold">
-                      J
-                    </div>
-                    John Doe
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">Sick Leave</td>
-                <td className="px-6 py-4 text-gray-500">22 May 2024</td>
-                <td className="px-6 py-4 text-gray-500">23 May 2024</td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate">Fever and rest</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium tracking-wide bg-amber-50 text-amber-600 border border-amber-200">
-                    Pending
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right pr-6">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 text-emerald-600 bg-emerald-50 hover:bg-emerald-100/80 rounded-md transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    </button>
-                    <button className="p-1.5 text-rose-600 bg-rose-50 hover:bg-rose-100/80 rounded-md transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
 
-              {/* Row 2: Pending Casual Leave */}
-              <tr className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-semibold">
-                      E
-                    </div>
-                    Emily Davis
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">Casual Leave</td>
-                <td className="px-6 py-4 text-gray-500">24 May 2024</td>
-                <td className="px-6 py-4 text-gray-500">24 May 2024</td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate">Personal work</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium tracking-wide bg-amber-50 text-amber-600 border border-amber-200">
-                    Pending
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right pr-6">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 text-emerald-600 bg-emerald-50 hover:bg-emerald-100/80 rounded-md transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    </button>
-                    <button className="p-1.5 text-rose-600 bg-rose-50 hover:bg-rose-100/80 rounded-md transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            <tbody>
+              {filteredLeaves.map((leave) => (
+                <tr key={leave._id} className="border-t">
+                  <td className="p-3">
+                    {leave.employeeDetails?.email || "-"}
+                  </td>
 
-              {/* Row 3: Approved Annual Leave */}
-              <tr className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-semibold">
-                      M
-                    </div>
-                    Michael Johnson
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">Annual Leave</td>
-                <td className="px-6 py-4 text-gray-500">27 May 2024</td>
-                <td className="px-6 py-4 text-gray-500">31 May 2024</td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate">Vacation</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium tracking-wide bg-emerald-50 text-emerald-600 border border-emerald-200">
-                    Approved
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right pr-6">
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="p-1.5 text-emerald-600 bg-emerald-50 rounded-md opacity-60">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.14-.082l4-5.6z" clipRule="evenodd" />
-                      </svg>
+                  <td className="p-3">{leave.reason || "-"}</td>
+
+                  <td className="p-3">
+                    {formatDate(leave.fromDate)}
+                  </td>
+
+                  <td className="p-3">
+                    {formatDate(leave.toDate)}
+                  </td>
+
+                  <td className="p-3">{leave.reason || "-"}</td>
+
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 text-xs rounded ${getStatusStyle(
+                        leave.Leavestatus
+                      )}`}
+                    >
+                      {leave.Leavestatus || "pending"}
                     </span>
-                    <button className="p-1.5 text-rose-600 bg-rose-50 hover:bg-rose-100/80 rounded-md transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                  </td>
 
-              {/* Row 4: Rejected Casual Leave */}
-              <tr className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-semibold">
-                      J
-                    </div>
-                    Jane Smith
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">Casual Leave</td>
-                <td className="px-6 py-4 text-gray-500">20 May 2024</td>
-                <td className="px-6 py-4 text-gray-500">20 May 2024</td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate">Family function</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium tracking-wide bg-rose-50 text-rose-600 border border-rose-200">
-                    Rejected
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right pr-6">
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-xs text-gray-400 italic pr-2 select-none">
-                      No actions available
-                    </span>
-                  </div>
-                </td>
-              </tr>
+                  <button
+  type="button"
+  onClick={() => updateStatus(leave._id, "approved")}
+  disabled={leave.Leavestatus === "approved"}
+  className="bg-green-500 text-white px-3 py-1 rounded disabled:opacity-40"
+>
+  ✓
+</button>
 
+<button
+  type="button"
+  onClick={() => updateStatus(leave._id, "reject")}
+  disabled={leave.Leavestatus === "reject"}
+  className="bg-red-500 text-white px-3 py-1 rounded disabled:opacity-40"
+>
+  ✕
+</button>
+                </tr>
+              ))}
+
+              {filteredLeaves.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center p-4">
+                    No leave requests
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-        </div>
+        )}
       </div>
     </div>
   );

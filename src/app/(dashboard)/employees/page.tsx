@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Eye } from "lucide-react";
 
 /* ---------------- BASE CONFIG ---------------- */
 const BASE_URL = "http://localhost:5000/admin";
@@ -138,14 +139,13 @@ export default function EmployeesPage() {
 
                 <td className="flex gap-2 p-3">
                   {/* EDIT */}
-                  <button
-                    onClick={() =>
-                      router.push(`/employees/edit/${emp._id}`)
-                    }
-                    className="text-blue-600"
-                  >
-                    ✏️
-                  </button>
+                 <button
+  onClick={() => router.push(`/employees/${emp._id}`)}
+  className="text-green-600 hover:text-green-800"
+>
+  <Eye size={20} />
+  </button>
+
 
                   {/* DELETE */}
                   <button

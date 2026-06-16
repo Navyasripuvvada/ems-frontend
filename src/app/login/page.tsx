@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import {toast} from 'sonner';
 import { useRouter } from "next/navigation";
 
 type FormData = {
@@ -32,29 +33,33 @@ export default function LoginPage() {
       setError("");
 
       const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        formData
-      );
+  "http://localhost:5000/auth/login",
+  formData
+);
 
-      console.log("Login Success:", response.data);
+localStorage.setItem("token", response.data.token);
 
-      localStorage.setItem("token", response.data.token);
+const role = response.data.role;
 
-      const role = response.data.role;
+// ✅ Toast here
+toast(
+  role === "admin"
+    ? "Welcome Admin "
+    : "Welcome Employee"
+);
 
-      alert(
-        role === "admin"
-          ? "Welcome Admin 👑"
-          : "Welcome Employee 👨‍💼"
-      );
-
+// ✅ Redirect
+if (role === "admin") {
+  router.push("/dashboard");
+} else {
+  router.push("/employee/dashboard");
+}
       // ✅ Proper routing based on role
       if (role === "admin") {
-        router.push("/dashboard");
-      } else {
-        router.push("/employee/dashboard");
-      }
-
+  toast.success("Welcome Admin 👑");
+} else {
+  toast.info("Welcome Employee 👨‍💼");
+}
     } catch (err: any) {
       console.log("Login Error:", err);
       setError(err.response?.data?.message || "Something went wrong");
@@ -71,13 +76,13 @@ export default function LoginPage() {
         <div className="max-w-md w-full mx-auto">
 
           {/* LOGO */}
-          <div className="mb-8 flex justify-center">
-            <img
-              src="/logo.jpeg"
-              alt="EMS Logo"
-              className="w-12 h-12 object-contain"
-            />
-          </div>
+          {/* LOGO + BRAND */}
+<div className="mb-10 flex items-center justify-center gap-3">
+  
+  <h1 className="text-2xl font-semibold text-gray-800 tracking-wide">
+    Ryzer
+  </h1>
+</div>
 
           <p className="text-gray-500 mb-6">
             Login to access your dashboard
