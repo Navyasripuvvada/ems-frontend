@@ -76,13 +76,30 @@ export default function AttendanceCalendar() {
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-1 text-center text-sm">
         {days.map((day, index) => {
-          if (!day) return <div key={index}></div>;
+          if (!day) return <div key={index} className="aspect-square"></div>;
 
           const status = attendanceMap[day];
           const isToday =
             day === today.getDate() &&
             month === today.getMonth() + 1 &&
             year === today.getFullYear();
+
+          // Define dynamic status layouts with refined design tokens
+          let statusClasses = "text-gray-700 hover:bg-gray-50";
+          let dotColor = "";
+
+          if (status === "present") {
+            statusClasses = "bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100";
+            dotColor = "bg-emerald-500";
+          } else if (status === "leave") {
+            statusClasses = "bg-rose-50 text-rose-700 font-semibold border border-rose-100";
+            dotColor = "bg-rose-500";
+          }
+
+          // Accent ring layout for the current day
+          const todayClasses = isToday 
+            ? "ring-2 ring-indigo-500 ring-offset-2 z-10 shadow-sm" 
+            : "";
 
           return (
             <div
