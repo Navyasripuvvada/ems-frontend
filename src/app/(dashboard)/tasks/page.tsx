@@ -57,7 +57,7 @@ export default function TodayAttendance() {
 
         const today = new Date().toISOString().split("T")[0];
 
-        const filtered = res.data.filter((item: Attendance) => {
+        const filtered = res.data.data.filter((item: Attendance) => {
           return item.date?.split("T")[0] === today;
         });
 
@@ -96,7 +96,7 @@ export default function TodayAttendance() {
               <tr key={index} className="border-b">
                 {/* Employee */}
                 <td className="p-2">
-                  {emp.employeeId?.fullName || "N/A"}
+                  {emp.employee?.fullName }
                 </td>
 
                 {/* Date */}
@@ -133,7 +133,6 @@ export default function TodayAttendance() {
               >
                 No attendance records for today
               </td>
-              console.log("checkInTime:", emp.checkInTime);
             </tr>
           )}
         </tbody>
