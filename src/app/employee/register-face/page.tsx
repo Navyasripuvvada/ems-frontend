@@ -50,8 +50,7 @@ export default function RegisterFace() {
 
     setDescriptor(Array.from(detection.descriptor));
     toast.success("Face captured successfully ✅");
-  }; // ✅ FIXED (missing closing brace earlier)
-
+  }; 
   const registerFace = async () => {
     if (!descriptor) {
       toast.error("Please capture face first");
@@ -87,9 +86,11 @@ export default function RegisterFace() {
 
       toast.success("Face registered successfully 🎉"); // ✅ replaced alert
       setDescriptor(null);
-    } catch (err) {
-      console.log(err);
-      toast.error("Error registering face ❌"); // ✅ replaced alert
+    }catch (err: any) {
+      const message =
+        err.response?.data?.message 
+
+      toast.error(message);
     }
 
     setLoading(false);
