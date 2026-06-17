@@ -3,91 +3,92 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
 
-type AttendanceType = {
-  date: string;
-  status: "present" | "leave" | "absent";
-};
-
 export default function AttendanceCalendar() {
-  const [attendance, setAttendance] = useState<AttendanceType[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+
   const today = new Date();
-
   const year = today.getFullYear();
-  const month = today.getMonth() + 1; // ✅ IMPORTANT (1-based for API)
+  const month = today.getMonth() + 1;
 
-  useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const res = await api.get(
-          `/attendance/monthly?month=${month}&year=${year}`
-        );
+ useEffect(() => {
+  const fetchAttendance = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        console.log("API DATA 👉", res.data); // ✅ Debug
+      console.log("TOKEN =>", token);
 
-        // ⚠️ Adjust this line if backend wraps data
-        setAttendance(res.data);
-        // OR: setAttendance(res.data.data);
+      const res = await api.get(
+        `/attendance/monthly?month=${month}&year=${year}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      } catch (err) {
-        console.error("Error fetching attendance:", err);
-      }
-    };
+      console.log("Attendance Response:", res.data);
 
-    fetchAttendance();
-  }, [month, year]);
+      setAttendance(res.data.calendar || []);
+    } catch (error) {
+      console.error("Attendance fetch error:", error);
+    }
+  };
 
-  // ✅ Convert to map
+  fetchAttendance();
+}, [month, year]);
+
   const attendanceMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    attendance.forEach((a) => {
-      map[a.date] = a.status;
+    const map: Record<number, string> = {};
+
+    attendance.forEach((item) => {
+      map[item.day] = item.status.toLowerCase();
     });
+
     return map;
   }, [attendance]);
 
   const daysInMonth = new Date(year, month, 0).getDate();
 
-  const firstDay = (new Date(year, month - 1, 1).getDay() + 6) % 7;
-
-  const formatDate = (d: number) =>
-    `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const firstDay =
+    (new Date(year, month - 1, 1).getDay() + 6) % 7;
 
   const days: (number | null)[] = [];
-  for (let i = 0; i < firstDay; i++) days.push(null);
-  for (let d = 1; d <= daysInMonth; d++) days.push(d);
 
-  const getStyle = (status?: string, isWeekend?: boolean) => {
-    if (status === "present") return "text-emerald-600 font-bold";
-    if (status === "leave") return "text-indigo-500 font-bold";
-    if (status === "absent") return "text-rose-500 font-bold";
-    if (isWeekend) return "text-slate-400";
-    return "text-slate-700";
-  };
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    days.push(day);
+  }
 
   return (
-    <>
-      <h2 className="font-bold mb-4 text-slate-800">
-        My Attendance ({today.toLocaleString("default", { month: "long" })}{" "}
+    <div className="bg-white rounded-xl p-5 shadow-sm">
+      <h2 className="font-bold text-2xl mb-6">
+        My Attendance (
+        {today.toLocaleString("default", {
+          month: "long",
+        })}{" "}
         {year})
       </h2>
 
-      {/* Days */}
-      <div className="grid grid-cols-7 text-center text-xs font-semibold text-slate-400 mb-2">
-        <div>Mon</div><div>Tue</div><div>Wed</div>
-        <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+      {/* Week Days */}
+      <div className="grid grid-cols-7 text-center font-semibold text-gray-500 mb-5">
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+        <div>Sun</div>
       </div>
 
       {/* Calendar */}
-      <div className="grid grid-cols-7 text-center text-xs font-semibold gap-y-3 items-center">
-        {days.map((day, idx) => {
-          if (!day) return <div key={idx}></div>;
+      <div className="grid grid-cols-7 gap-y-5 text-center">
+        {days.map((day, index) => {
+          if (!day) return <div key={index}></div>;
 
-          const fullDate = formatDate(day);
-          const status = attendanceMap[fullDate];
-
-          const dateObj = new Date(year, month - 1, day);
-          const isWeekend =
-            dateObj.getDay() === 0 || dateObj.getDay() === 6;
+          const status = attendanceMap[day];
 
           const isToday =
             day === today.getDate() &&
@@ -96,22 +97,36 @@ export default function AttendanceCalendar() {
 
           return (
             <div
-              key={idx}
-              className={`relative flex flex-col items-center justify-center p-1 rounded-md
-                ${getStyle(status, isWeekend)}
-                ${isToday ? "bg-indigo-100 border border-indigo-400" : ""}
-              `}
+              key={index}
+              className={`flex flex-col items-center justify-center p-1 rounded-md ${
+                isToday
+                  ? "bg-indigo-100 border border-indigo-400"
+                  : ""
+              }`}
             >
-              <span>{day}</span>
-
-              {status === "present" && (
-                <span className="h-1 w-1 bg-emerald-500 rounded-full mt-0.5"></span>
-              )}
-              {status === "leave" && (
-                <span className="h-1 w-1 bg-indigo-500 rounded-full mt-0.5"></span>
-              )}
-              {status === "absent" && (
-                <span className="h-1 w-1 bg-rose-500 rounded-full mt-0.5"></span>
+              {/* Present */}
+              {status === "present" ? (
+                <>
+                  <span className="text-green-600 font-bold">
+                    {day}
+                  </span>
+                  <span className="w-2 h-2 bg-green-500 rounded-full mt-1"></span>
+                </>
+              ) : status === "leave" ? (
+                <>
+                  {/* Leave */}
+                  <span className="text-red-500 font-bold">
+                    {day}
+                  </span>
+                  <span className="w-2 h-2 bg-red-500 rounded-full mt-1"></span>
+                </>
+              ) : (
+                <>
+                  {/* Default */}
+                  <span className="text-gray-700">
+                    {day}
+                  </span>
+                </>
               )}
             </div>
           );
@@ -119,20 +134,17 @@ export default function AttendanceCalendar() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium text-slate-500 border-t border-slate-50 pt-4 mt-4">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-500"></span> Present
+      <div className="flex gap-6 mt-8 pt-4 border-t">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+          <span>Present</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-indigo-500"></span> Leave
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-rose-500"></span> Absent
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-slate-400"></span> Weekend
+
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+          <span>Leave</span>
         </div>
       </div>
-    </>
+    </div>
   );
 }
