@@ -30,7 +30,6 @@ export default function EmployeeLayout({
   const navigationItems = [
     { icon: <Home size={18} />, label: "Dashboard", href: "/employee/dashboard" },
     { icon: <User size={18} />, label: "My Profile", href: "/employee/profile" },
-    { icon: <ClipboardList size={18} />, label: "My Tasks", href: "/employee/tasks" },
     { icon: <CalendarCheck size={18} />, label: "Leave Requests", href: "/employee/leaves" },
     { icon: <Settings size={18} />, label: "Leave History", href: "/employee/history" },
     {label:"Mark Attendance",href:"/employee/attendance"},

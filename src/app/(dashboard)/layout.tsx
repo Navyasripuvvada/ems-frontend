@@ -31,7 +31,6 @@ export default function AdminLayout({
     { icon: <Users size={18} />, label: "Employees", href: "/employees" },
     { icon: <ClipboardList size={18} />, label: "Leave Requests", href: "/leaves" },
     { icon: <ClipboardList size={18} />, label: "Tasks", href: "/tasks" },
-    { icon: <Settings size={18} />, label: "Settings", href: "/settings" },
   ];
 
   // Helper function to dynamically determine the correct header title

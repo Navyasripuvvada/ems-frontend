@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { DashboardData } from '@/types/dashboard';
+import AttendanceCalendar from '../../components/AttendanceCalendar';
 
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -175,89 +176,14 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-          {/* <div className="mt-4 border-t border-slate-50 pt-4 text-right">
-            <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
-              View Leave Details
-            </button>
-          </div> */}
+          
         </div>
 
         {/* My Attendance Calendar Panel */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex flex-col justify-between">
-          <div>
-            <h2 className="font-bold mb-4 text-slate-800">My Attendance (May 2024)</h2>
-            
-            {/* Days of week header */}
-            <div className="grid grid-cols-7 text-center text-xs font-semibold text-slate-400 mb-2">
-              <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-            </div>
-
-            {/* Calendar dates mapping */}
-            <div className="grid grid-cols-7 text-center text-xs font-semibold text-slate-700 gap-y-3 items-center">
-              {/* Row 1 */}
-              <div></div>
-              <div className="p-1">2</div>
-              <div className="p-1">3</div>
-              <div className="p-1">4</div>
-              <div className="p-1">5</div>
-              <div className="p-1">6</div>
-              <div className="p-1">7</div>
-
-              {/* Row 2 */}
-              <div className="p-1">8</div>
-              <div className="relative flex flex-col items-center justify-center p-1">
-                <span className="text-emerald-600 font-bold">9</span>
-                <span className="h-1 w-1 rounded-full bg-emerald-500 mt-0.5"></span>
-              </div>
-              <div className="relative flex flex-col items-center justify-center p-1">
-                <span className="text-emerald-600 font-bold">10</span>
-                <span className="h-1 w-1 rounded-full bg-emerald-500 mt-0.5"></span>
-              </div>
-              <div className="p-1">11</div>
-              <div className="p-1">12</div>
-              <div className="p-1">13</div>
-              <div className="text-indigo-600 font-bold p-1">14</div>
-
-              {/* Row 3 */}
-              <div className="text-emerald-600 font-bold p-1">15</div>
-              <div className="text-rose-500 font-bold p-1">16</div>
-              <div className="p-1">17</div>
-              <div className="p-1">18</div>
-              <div className="text-rose-500 font-bold p-1">19</div>
-              <div className="p-1">20</div>
-              <div className="text-amber-500 font-bold p-1">21</div>
-
-              {/* Row 4 */}
-              <div className="p-1">22</div>
-              <div className="text-rose-500 font-bold p-1">23</div>
-              <div className="text-emerald-600 font-bold p-1">24</div>
-              <div className="p-1">25</div>
-              <div className="text-rose-500 font-bold p-1">26</div>
-              <div className="text-indigo-500 font-bold p-1">27</div>
-              <div className="text-amber-500 font-bold p-1">28</div>
-            </div>
-
-            {/* Attendance Legends */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium text-slate-500 border-t border-slate-50 pt-4 mt-4">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span> Present
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-400"></span> Half Day
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-indigo-500"></span> Leave
-              </div>
-            </div>
-          </div>
-
-          {/* <div className="text-right mt-4 pt-2">
-            <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
-              View Attendance
-            </button>
-          </div> */}
-        </div>
-
+  <AttendanceCalendar />
+</div>
+       
       </div>
     </div>
   );

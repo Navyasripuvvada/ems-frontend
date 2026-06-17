@@ -7,7 +7,8 @@ import api from "@/lib/api";
 export default function AttendancePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [status, setStatus] = useState("Loading...");
+  // ✅ Clean state (no default text)
+  const [status, setStatus] = useState("");
   const [ready, setReady] = useState(false);
 
   // -----------------------------
@@ -38,11 +39,10 @@ export default function AttendancePage() {
           });
         }
 
-        setReady(true);
-        setStatus("Ready to mark attendance");
+        setReady(true); // ✅ system ready silently
       } catch (err) {
         console.error(err);
-        setStatus("Camera or model loading failed");
+        setStatus("Initialization failed");
       }
     };
 
@@ -59,7 +59,7 @@ export default function AttendancePage() {
         return;
       }
 
-      setStatus("Detecting face...");
+      setStatus("Scanning face...");
 
       const detection = await faceapi
         .detectSingleFace(
@@ -73,31 +73,30 @@ export default function AttendancePage() {
         .withFaceDescriptor();
 
       if (!detection || !detection.descriptor) {
-        setStatus("No face detected");
+        setStatus("Face not detected");
         return;
       }
 
       const descriptor = Array.from(detection.descriptor);
 
       if (descriptor.length !== 128) {
-        setStatus("Invalid face descriptor");
+        setStatus("Invalid face data");
         return;
       }
 
       const token = localStorage.getItem("token");
 
       if (!token) {
-        setStatus("Token missing. Please login again.");
+        setStatus("Authentication required");
         return;
       }
 
-      setStatus("Marking attendance...");
+      setStatus("Submitting attendance...");
 
-      // 🔥 FIXED REQUEST (MATCH BACKEND)
       const res = await api.post(
         "http://localhost:5000/attendance/mark",
         {
-          faceDescriptor: descriptor, // ✅ MUST MATCH BACKEND
+          faceDescriptor: descriptor,
         },
         {
           headers: {
@@ -106,44 +105,93 @@ export default function AttendancePage() {
         }
       );
 
-      setStatus(res.data.message || "Attendance marked");
+      setStatus(res.data.message || "Attendance recorded");
     } catch (err: any) {
       console.error(err);
-      setStatus(
-        err?.response?.data?.message || "Attendance failed"
-      );
+      setStatus(err?.response?.data?.message || "Request failed");
     }
   };
 
+  // -----------------------------
+  // STATUS COLOR
+  // -----------------------------
+  const getStatusColor = () => {
+    if (
+      status.toLowerCase().includes("fail") ||
+      status.toLowerCase().includes("not")
+    ) {
+      return "text-red-600";
+    }
+
+    if (
+      status.toLowerCase().includes("recorded") ||
+      status.toLowerCase().includes("success")
+    ) {
+      return "text-green-600";
+    }
+
+    return "text-gray-500";
+  };
+
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Face Attendance System</h2>
+    <div className="min-h-screen bg-gray-100">
 
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        width={400}
-        height={300}
-        style={{ border: "2px solid black", borderRadius: 10 }}
-      />
+      {/* Header */}
+      <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+        <h1 className="text-lg font-semibold text-gray-800">
+          Employee Attendance
+        </h1>
+        <span className="text-sm text-gray-500">
+          Face Recognition System
+        </span>
+      </header>
 
-      <br />
+      {/* Main */}
+      <main className="flex justify-center items-center py-10 px-4">
+        <div className="bg-white w-full max-w-lg border rounded-lg shadow-sm p-6">
 
-      <button
-        onClick={markAttendance}
-        disabled={!ready}
-        style={{
-          marginTop: 10,
-          padding: "10px 20px",
-          cursor: ready ? "pointer" : "not-allowed",
-        }}
-      >
-        {ready ? "Mark Attendance" : "Loading..."}
-      </button>
+          <h2 className="text-md font-medium text-gray-700 mb-4">
+            Mark Attendance
+          </h2>
 
-      <p style={{ marginTop: 10 }}>{status}</p>
+          {/* Camera */}
+          <div className="border rounded-md overflow-hidden bg-black mb-4">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="w-full h-auto"
+            />
+          </div>
+
+          {/* Button */}
+          <button
+            onClick={markAttendance}
+            disabled={!ready}
+            className={`w-full py-2.5 text-sm font-medium rounded-md transition
+              ${
+                ready
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }
+            `}
+          >
+            Mark Attendance
+          </button>
+
+          {/* Status (only when needed) */}
+          {status && (
+            <p className={`mt-4 text-sm ${getStatusColor()}`}>
+              {status}
+            </p>
+          )}
+
+        </div>
+      </main>
     </div>
   );
 }
