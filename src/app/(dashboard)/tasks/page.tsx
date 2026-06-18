@@ -53,8 +53,7 @@ export default function TodayAttendance() {
           }
         );
 
-        console.log("API DATA:", res.data); // ✅ debug
-
+        console.log("API DATA:", res.data); 
         const today = new Date().toISOString().split("T")[0];
 
         const filtered = res.data.data.filter((item: Attendance) => {
