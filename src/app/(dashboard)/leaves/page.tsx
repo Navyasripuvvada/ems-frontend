@@ -170,9 +170,18 @@ export default function LeaveRequestsPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="border px-3 py-2 rounded w-1/3"
         />
-        </div>
 
-      
+        <select
+          value={leaveType}
+          onChange={(e) => setLeaveType(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="all">All Leave Types</option>
+          <option value="sick">Sick Leave</option>
+          <option value="casual">Casual Leave</option>
+        </select>
+      </div>
+
       {/* ---------------- TABLE ---------------- */}
       
       <div className="bg-white rounded-lg shadow overflow-hidden">

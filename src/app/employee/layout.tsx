@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Home,
   User,
-  ClipboardList,
   CalendarCheck,
   CalendarClock,
   LogOut,
@@ -31,29 +31,65 @@ export default function EmployeeLayout({
   const pathname = usePathname();
   const router = useRouter();
 
+  const [employeeName, setEmployeeName] = useState("");
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("employeeName");
+
+    if (storedName) {
+      setEmployeeName(storedName);
+    }
+  }, []);
+
   const navigationItems = [
-    { icon: <Home size={18} />, label: "Dashboard", href: "/employee/dashboard" },
-    { icon: <User size={18} />, label: "My Profile", href: "/employee/profile" },
-    { icon: <CalendarCheck size={18} />, label: "Leave Requests", href: "/employee/leaves" },
-    { icon: <CalendarClock size={18} />, label: "Leave History", href: "/employee/history" },
-    { icon: <UserCheck size={18} />, label: "Mark Attendance", href: "/employee/attendance" },
-    { icon: <ScanFace size={18} />, label: "Register Face", href: "/employee/register-face" },
+    {
+      icon: <Home size={18} />,
+      label: "Dashboard",
+      href: "/employee/dashboard",
+    },
+    {
+      icon: <User size={18} />,
+      label: "My Profile",
+      href: "/employee/profile",
+    },
+    {
+      icon: <CalendarCheck size={18} />,
+      label: "Leave Requests",
+      href: "/employee/leaves",
+    },
+    {
+      icon: <CalendarClock size={18} />,
+      label: "Leave History",
+      href: "/employee/history",
+    },
+    {
+      icon: <UserCheck size={18} />,
+      label: "Mark Attendance",
+      href: "/employee/attendance",
+    },
+    {
+      icon: <ScanFace size={18} />,
+      label: "Register Face",
+      href: "/employee/register-face",
+    },
   ];
 
   const handleLogout = () => {
-    // clear auth (adjust key as per your project)
     localStorage.removeItem("token");
+    localStorage.removeItem("employeeName");
 
-    // redirect to login
     router.push("/login");
   };
 
   const getHeaderTitle = () => {
-    if (pathname === "/employee/dashboard") return "Welcome back 👋";
+    if (pathname === "/employee/dashboard") {
+      return `Welcome ${employeeName || "Employee"} 👋`;
+    }
 
     const currentItem = navigationItems.find(
       (item) => item.href === pathname
     );
+
     return currentItem ? currentItem.label : "Employee Panel";
   };
 
@@ -75,7 +111,6 @@ export default function EmployeeLayout({
           ))}
         </nav>
 
-        {/* Logout */}
         <NavItem
           icon={<LogOut size={18} />}
           label="Logout"
@@ -101,7 +136,6 @@ export default function EmployeeLayout({
 
 /* ---------------- Sidebar Item ---------------- */
 function NavItem({ icon, label, href, onClick, active }: NavItemProps) {
-  // If it's an action (logout)
   if (onClick) {
     return (
       <button
@@ -114,7 +148,6 @@ function NavItem({ icon, label, href, onClick, active }: NavItemProps) {
     );
   }
 
-  // Normal navigation item
   return (
     <Link
       href={href!}

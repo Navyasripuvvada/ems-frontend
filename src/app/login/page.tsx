@@ -41,9 +41,11 @@ export default function LoginPage() {
 );
 
 localStorage.setItem("token", response.data.token);
+localStorage.setItem("employeeName", response.data.name);
+
 
 const role = response.data.role;
-
+const name = response.data.name;
 // ✅ Toast here
 toast(
   role === "admin"
@@ -59,9 +61,9 @@ if (role === "admin") {
 }
       // ✅ Proper routing based on role
       if (role === "admin") {
-  toast.success("Welcome Admin 👑");
+  toast.success(`Welcome ${name} 👑`);
 } else {
-  toast.info("Welcome Employee 👨‍💼");
+  toast.info(`Welcome ${name} 👨‍💼`);
 }
     } catch (err: any) {
       console.log("Login Error:", err);
