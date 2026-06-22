@@ -138,7 +138,6 @@ export default function LeaveRequestsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Leave Requests</h1>
 
       {/* ---------------- TABS ---------------- */}
       <div className="flex gap-4 mb-4">
@@ -171,15 +170,7 @@ export default function LeaveRequestsPage() {
           className="border px-3 py-2 rounded w-1/3"
         />
 
-        <select
-          value={leaveType}
-          onChange={(e) => setLeaveType(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="all">All Leave Types</option>
-          <option value="sick">Sick Leave</option>
-          <option value="casual">Casual Leave</option>
-        </select>
+        
       </div>
 
       {/* ---------------- TABLE ---------------- */}
@@ -227,7 +218,7 @@ export default function LeaveRequestsPage() {
 
         <td className="p-3">
           <span
-            className={`px-2 py-1 text-xs rounded ${getStatusStyle(
+            className={`px-2 py-1 text-xs rounded-xl ${getStatusStyle(
               leave.Leavestatus
             )}`}
           >

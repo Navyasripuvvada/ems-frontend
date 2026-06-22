@@ -44,32 +44,32 @@ export default function EmployeeLayout({
 
   const navigationItems = [
     {
-      icon: <Home size={18} />,
+      icon: <Home size={25} />,
       label: "Dashboard",
       href: "/employee/dashboard",
     },
     {
-      icon: <User size={18} />,
+      icon: <User size={25} />,
       label: "My Profile",
       href: "/employee/profile",
     },
     {
-      icon: <CalendarCheck size={18} />,
+      icon: <CalendarCheck size={25} />,
       label: "Leave Requests",
       href: "/employee/leaves",
     },
     {
-      icon: <CalendarClock size={18} />,
+      icon: <CalendarClock size={25} />,
       label: "Leave History",
       href: "/employee/history",
     },
     {
-      icon: <UserCheck size={18} />,
+      icon: <UserCheck size={25} />,
       label: "Mark Attendance",
       href: "/employee/attendance",
     },
     {
-      icon: <ScanFace size={18} />,
+      icon: <ScanFace size={25} />,
       label: "Register Face",
       href: "/employee/register-face",
     },
@@ -113,7 +113,7 @@ export default function EmployeeLayout({
         </nav>
 
         <NavItem
-          icon={<LogOut size={18} />}
+          icon={<LogOut size={25} />}
           label="Logout"
           onClick={handleLogout}
         />
@@ -147,7 +147,7 @@ function NavItem({ icon, label, href, onClick, active }: NavItemProps) {
     return (
       <button
         onClick={onClick}
-        className="flex items-center gap-3 px-3 py-2 rounded transition w-full text-left text-gray-300 hover:bg-gray-800 hover:text-white"
+        className="flex items-center gap-3 px-3 py-2 rounded transition w-full text-left text-gray-300 text-lg hover:bg-gray-800 hover:text-white"
       >
         {icon}
         <span className="text-sm">{label}</span>

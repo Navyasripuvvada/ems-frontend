@@ -74,110 +74,128 @@ export default function DashboardPage() {
 
   const { totalLeaves, leavesTaken, remainingLeaves, pendingRequests } = dashboardData;
 
-  const radius = 40;
+  const radius = 60;
   const circumference = 2 * Math.PI * radius;
   const leavePercentage = totalLeaves > 0 ? remainingLeaves / totalLeaves : 0;
   const strokeDashoffset = circumference - leavePercentage * circumference;
 
   return (
-    <div className="min-h-screen bg-slate-50/60 p-4 md:p-8 font-sans text-slate-800">
+  <div className="min-h-screen bg-slate-50/60 p-4 md:p-8 font-sans text-slate-800">
 
-      {/* Header */}
-      
-    
+    {/* Metrics Row */}
+    <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
-      {/* Metrics Row */}
-      <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl bg-white p-5 shadow-sm border">
-          <p className="text-xs text-slate-400">Total Leaves</p>
-          <h3 className="text-2xl font-bold">{totalLeaves}</h3>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow-sm border">
-          <p className="text-xs text-slate-400">Leaves Taken</p>
-          <h3 className="text-2xl font-bold">{leavesTaken}</h3>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow-sm border">
-          <p className="text-xs text-slate-400">Remaining</p>
-          <h3 className="text-2xl font-bold">{remainingLeaves}</h3>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow-sm border">
-          <p className="text-xs text-slate-400">Pending Requests</p>
-          <h3 className="text-2xl font-bold">{pendingRequests}</h3>
-        </div>
+      <div className="rounded-2xl bg-blue-50 border border-blue-100 p-8 shadow-sm">
+        <p className="text-xs text-blue-500">Total Leaves</p>
+        <h3 className="text-2xl font-bold text-blue-700">{totalLeaves}</h3>
       </div>
 
-      {/* Two Column Layout for Interactive Panels */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        
-        {/* Leave Balance Panel */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border flex flex-col justify-between">
-          <div>
-            <h2 className="font-bold mb-6 text-slate-800">Leave Balance</h2>
-            <div className="flex flex-col items-center justify-around gap-6 sm:flex-row my-4">
-              <div className="relative flex items-center justify-center">
-                <svg className="h-36 w-36 transform -rotate-90">
-                  <circle
-                    cx="72"
-                    cy="72"
-                    r={radius}
-                    stroke="#e2e8f0"
-                    strokeWidth="12"
-                    fill="transparent"
-                  />
-                  <circle
-                    cx="72"
-                    cy="72"
-                    r={radius}
-                    stroke="#6366f1"
-                    strokeWidth="12"
-                    fill="transparent"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                  />
-                </svg>
+      <div className="rounded-2xl bg-rose-50 border border-emerald-100 p-5 shadow-sm">
+        <p className="text-xs text-rose-500">Leaves Taken</p>
+        <h3 className="text-2xl font-bold text-rose-700">{leavesTaken}</h3>
+      </div>
 
-                <div className="absolute text-center">
-                  <div className="text-2xl font-bold">{remainingLeaves}</div>
-                  <div className="text-xs text-slate-500">Days Left</div>
-                </div>
-              </div>
+      <div className="rounded-2xl bg-amber-50 border border-amber-100 p-5 shadow-sm ">
+        <p className="text-xs text-amber-500">Remaining</p>
+        <h3 className="text-2xl font-bold text-amber-700">{remainingLeaves}</h3>
+      </div>
 
-              <div className="space-y-3 w-full sm:w-auto min-w-[160px]">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <span className="h-2.5 w-2.5 rounded-full bg-indigo-500"></span> Casual Leave
-                  </div>
-                  <span className="font-semibold text-slate-700">7 Days</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <span className="h-2.5 w-2.5 rounded-full bg-sky-400"></span> Sick Leave
-                  </div>
-                  <span className="font-semibold text-slate-700">5 Days</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <span className="h-2.5 w-2.5 rounded-full bg-teal-400"></span> Earned Leave
-                  </div>
-                  <span className="font-semibold text-slate-700">2 Days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
+      <div className="rounded-2xl bg-emerald-50 border border-rose-100 p-5 shadow-sm ">
+        <p className="text-xs text-emerald-500">Pending Requests</p>
+        <h3 className="text-2xl font-bold text-emerlad-700">{pendingRequests}</h3>
+      </div>
+
+    </div>
+
+    {/* Two Column Layout */}
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+      {/* Leave Balance Panel */}
+<div className="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border flex flex-col">
+
+  {/* soft background glow */}
+  <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100 rounded-full blur-3xl opacity-60" />
+
+  {/* Header */}
+  <div className="relative">
+    <h2 className="font-bold text-slate-800">Leave Balance</h2>
+    <p className="text-xs text-slate-400 mt-1">
+      Your remaining annual leave allocation
+    </p>
+  </div>
+
+  {/* Status Badge */}
+  <div className="relative mt-3">
+    <span className="px-3 py-1 text-xs rounded-full bg-indigo-50 text-indigo-600 font-medium">
+      Healthy Balance
+    </span>
+  </div>
+
+  {/* Circle Section */}
+  <div className="relative flex flex-col items-center justify-center gap-3 mt-6">
+
+    <div className="relative flex items-center justify-center">
+      <svg className="h-40 w-40 transform -rotate-90">
+        {/* Background Circle */}
+        <circle
+          cx="80"
+          cy="80"
+          r={radius}
+          stroke="#e2e8f0"
+          strokeWidth="12"
+          fill="transparent"
+        />
+
+        {/* Progress Circle */}
+        <circle
+          cx="80"
+          cy="80"
+          r={radius}
+          stroke="#6366f1"
+          strokeWidth="12"
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </svg>
+
+      {/* Center Content */}
+      <div className="absolute text-center">
+        <div className="text-3xl font-bold text-slate-800">
+          {remainingLeaves}
         </div>
-
-        {/* My Attendance Calendar Panel */}
-       {/* My Attendance Calendar Panel */}
-<div className="bg-white p-6 rounded-2xl shadow-sm border">
-  <AttendanceCalendar />
-</div>
-       
+        <div className="text-xs text-slate-500">Days Left</div>
       </div>
     </div>
-  );
+
+    {/* Progress Insight */}
+    <p className="text-sm text-slate-600 text-center">
+      You’ve used <span className="font-semibold">4</span> of 15 days
+    </p>
+  </div>
+
+  {/* Divider */}
+  <div className="my-4 border-t" />
+
+  {/* Stats Row */}
+  <div className="flex items-center justify-between text-xs text-slate-500">
+    <span>Used: 4 days</span>
+    <span>Total: 15 days</span>
+  </div>
+
+  {/* Footer Tip */}
+  <div className="mt-4 text-xs text-slate-400">
+    Tip: Plan early to avoid leave rejection during peak season.
+  </div>
+</div>
+
+      {/* Attendance Calendar Panel */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border">
+        <AttendanceCalendar />
+      </div>
+
+    </div>
+  </div>
+);
 }

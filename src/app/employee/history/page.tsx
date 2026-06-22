@@ -92,6 +92,13 @@ export default function LeaveHistory() {
         return "bg-gray-50 text-gray-700 px-3 py-1 rounded-full text-xs font-medium";
     }
   };
+  const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
   if (loading) {
     return (
@@ -111,7 +118,7 @@ export default function LeaveHistory() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-sm">
-      <h2 className="text-xl font-bold mb-4">Leave History</h2>
+  
 
       <div className="overflow-x-auto border rounded-lg">
         <table className="w-full text-left">
@@ -136,8 +143,8 @@ export default function LeaveHistory() {
               leaveData.map((leave, index) => (
                 <tr key={leave.id ?? index} className="border-t">
                   <td className="p-3">{leave.reason}</td>
-                  <td className="p-3">{leave.fromDate}</td>
-                  <td className="p-3">{leave.toDate}</td>
+                  <td className="p-3">{formatDate(leave.fromDate)}</td>
+<td className="p-3">{formatDate(leave.toDate)}</td>
                   <td className="p-3 text-center">{leave.days}</td>
                   <td className="p-3">
                     <span className={getStatusStyles(leave.status)}>

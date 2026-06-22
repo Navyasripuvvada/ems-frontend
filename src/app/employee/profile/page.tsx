@@ -11,9 +11,10 @@ import {
   CalendarDays,
   MapPin,
   Users,
+  BadgeIndianRupee,
+  UserCheck,
 } from "lucide-react";
 
-/* ---------------- TYPE ---------------- */
 type Employee = {
   fullName: string;
   email: string;
@@ -26,7 +27,6 @@ type Employee = {
   employeeId?: string;
   profilePicture?: string;
 
-  // ✅ ADDED FIELDS
   status?: string;
   salary?: number;
   dateOfBirth?: string;
@@ -44,14 +44,9 @@ export default function EmployeeProfile() {
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
 
-    const res = await axios.get(
-      "http://localhost:5000/employee/profile",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await axios.get("http://localhost:5000/employee/profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setData(res.data.employee);
     setLoading(false);
@@ -62,7 +57,6 @@ export default function EmployeeProfile() {
       setUploading(true);
 
       const token = localStorage.getItem("token");
-
       const formData = new FormData();
       formData.append("profilePicture", file);
 
@@ -81,15 +75,9 @@ export default function EmployeeProfile() {
 
       setData((prev) =>
         prev
-          ? {
-              ...prev,
-              profilePicture: `${newPath}?t=${Date.now()}`,
-            }
+          ? { ...prev, profilePicture: `${newPath}?t=${Date.now()}` }
           : prev
       );
-    } catch (err) {
-      console.log(err);
-      alert("Upload failed");
     } finally {
       setUploading(false);
     }
@@ -103,70 +91,123 @@ export default function EmployeeProfile() {
     : "";
 
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="p-6 bg-slate-50 min-h-screen">
+      <div className="max-w-5xl mx-auto space-y-6">
 
-      {/* LEFT CARD */}
-      <div className="bg-white shadow rounded-xl p-6 flex flex-col items-center">
+        {/* ===== HEADER CARD ===== */}
+        <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6">
 
-        <div className="relative w-32 h-32">
+          <div className="relative">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                className="w-28 h-28 rounded-full object-cover border-4 border-indigo-100"
+              />
+            ) : (
+              <div className="w-28 h-28 rounded-full bg-slate-100 flex items-center justify-center">
+                <UserCircle2 size={70} className="text-slate-400" />
+              </div>
+            )}
 
-          {data.profilePicture ? (
-            <img
-              src={imageUrl}
-              className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
-            />
-          ) : (
-            <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
-              <UserCircle2 size={80} className="text-gray-400" />
+            <label className="absolute bottom-0 right-0 bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded-full cursor-pointer">
+              +
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) uploadImage(e.target.files[0]);
+                }}
+              />
+            </label>
+
+            {uploading && (
+              <p className="text-xs text-indigo-500 mt-2">Uploading...</p>
+            )}
+          </div>
+
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-slate-800">
+              {data.fullName}
+            </h1>
+
+            <p className="text-slate-500">{data.designation}</p>
+
+            <div className="flex flex-wrap gap-2 mt-3">
+              <span className="px-3 py-1 text-xs rounded-full bg-indigo-50 text-indigo-600">
+                {data.department}
+              </span>
+
+              <span className="px-3 py-1 text-xs rounded-full bg-green-50 text-green-600">
+                {data.status || "Active"}
+              </span>
             </div>
-          )}
-
-          {/* UPLOAD BUTTON */}
-          <label className="absolute bottom-1 right-1 bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full cursor-pointer">
-            +
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  uploadImage(e.target.files[0]);
-                }
-              }}
-            />
-          </label>
+          </div>
         </div>
 
-        {uploading && (
-          <p className="text-blue-500 text-sm mt-2">Uploading...</p>
-        )}
+        {/* ===== INFO GRID ===== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <h2 className="mt-4 font-bold text-xl">{data.fullName}</h2>
-        <p className="text-gray-500">{data.designation}</p>
-      </div>
+          {/* Contact */}
+          <Section title="Contact Information">
+            <Info icon={<Mail size={16} />} label="Email" value={data.email} />
+            <Info icon={<Phone size={16} />} label="Phone" value={data.phoneNumber} />
+            <Info icon={<MapPin size={16} />} label="Address" value={data.address} />
+          </Section>
 
-      {/* RIGHT CARD */}
-      <div className="md:col-span-2 bg-white shadow rounded-xl p-6">
+          {/* Work */}
+          <Section title="Work Details">
+            <Info icon={<Building2 size={16} />} label="Department" value={data.department} />
+            <Info icon={<Briefcase size={16} />} label="Designation" value={data.designation} />
+            <Info icon={<CalendarDays size={16} />} label="Joining Date" value={data.dateOfJoining} />
+          </Section>
 
-        <ProfileRow icon={<Mail size={16} />} label="Email" value={data.email} />
-        <ProfileRow icon={<Phone size={16} />} label="Phone" value={data.phoneNumber} />
-        <ProfileRow icon={<Building2 size={16} />} label="Department" value={data.department} />
-        <ProfileRow icon={<Briefcase size={16} />} label="Designation" value={data.designation} />
-        <ProfileRow icon={<CalendarDays size={16} />} label="Joining Date" value={data.dateOfJoining} />
-        <ProfileRow icon={<MapPin size={16} />} label="Address" value={data.address} />
-        <ProfileRow icon={<Users size={16} />} label="Gender" value={data.gender} />
+          {/* Personal */}
+          <Section title="Personal Info">
+            <Info icon={<Users size={16} />} label="Gender" value={data.gender} />
+            <Info icon={<CalendarDays size={16} />} label="Date of Birth" value={data.dateOfBirth} />
+          </Section>
 
-        {/* ✅ ADDED FIELDS */}
-        <ProfileRow icon={<Briefcase size={16} />} label="Status" value={data.status} />
-        <ProfileRow icon={<Briefcase size={16} />} label="Salary" value={data.salary?.toString()} />
-        <ProfileRow icon={<CalendarDays size={16} />} label="Date of Birth" value={data.dateOfBirth} />
+          {/* Compensation */}
+          <Section title="Compensation">
+            <Info
+              icon={<BadgeIndianRupee size={16} />}
+              label="Salary"
+              value={data.salary ? `₹${data.salary}` : "-"}
+            />
+            <Info
+              icon={<UserCheck size={16} />}
+              label="Status"
+              value={data.status}
+            />
+          </Section>
+
+        </div>
       </div>
     </div>
   );
 }
 
-/* ---------------- ROW COMPONENT ---------------- */
-function ProfileRow({
+/* ===== SECTION CARD ===== */
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-5">
+      <h2 className="text-sm font-semibold text-slate-700 mb-4">
+        {title}
+      </h2>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+/* ===== INFO ROW ===== */
+function Info({
   icon,
   label,
   value,
@@ -176,12 +217,14 @@ function ProfileRow({
   value?: string;
 }) {
   return (
-    <div className="flex justify-between py-3 border-b">
-      <div className="flex items-center gap-2 text-gray-600">
+    <div className="flex justify-between items-center text-sm">
+      <div className="flex items-center gap-2 text-slate-500">
         {icon}
         <span>{label}</span>
       </div>
-      <span className="font-medium">{value || "-"}</span>
+      <span className="text-slate-800 font-medium">
+        {value || "-"}
+      </span>
     </div>
   );
 }

@@ -141,10 +141,10 @@ export default function DashboardPage() {
 
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-        <Card title="Total Employees" value={stats.totalEmployees} color="bg-blue-500/10" />
-        <Card title="Pending Leaves" value={stats.pendingLeaves} color="bg-yellow-500/10" />
-        <Card title="Approved Leaves" value={stats.approvedLeaves} color="bg-green-500/10" />
-        <Card title="Completed Tasks" value={stats.completedTasks} color="bg-purple-500/10" />
+        <Card title="Total Employees" value={stats.totalEmployees} color="bg-blue-500/10 border border-blue-100" />
+        <Card title="Pending Leaves" value={stats.pendingLeaves} color="bg-yellow-500/10 border border-yellow-100"/>
+        <Card title="Approved Leaves" value={stats.approvedLeaves} color="bg-green-500/10 border border-green-100"/>
+        <Card title="Completed Tasks" value={stats.completedTasks} color="bg-purple-500/10 border border-purple-100" />
       </div>
 
       {/* Main Section */}
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
 function Card({ title, value, color }: any) {
   return (
-    <div className={`p-7 rounded-xl shadow border border-black ${color}`}>
+    <div className={`p-7 rounded-xl shadow  ${color}`}>
       <div className="flex flex-col justify-start -mt-1">
         <p className="text-gray-900 text-l font-medium mb-4">{title}</p>
         <h3 className="text-2xl font-bold text-black">{value}</h3>

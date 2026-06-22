@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Eye } from "lucide-react";
+import { Eye ,Trash } from "lucide-react";
 import { toast } from "sonner";
 
 const BASE_URL = "http://localhost:5000/admin";
@@ -91,25 +91,26 @@ export default function EmployeesPage() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
 
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Employees</h1>
+      {/* HEADER + SEARCH ROW */}
+<div className="flex justify-between items-center mb-6 gap-4">
 
-        <button
-          onClick={() => router.push("/employees/add")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          + Add Employee
-        </button>
-      </div>
+  {/* LEFT: SEARCH */}
+  <input
+    className="w-full md:w-1/3 p-2 border rounded"
+    placeholder="Search..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+  />
 
-      {/* SEARCH */}
-      <input
-        className="w-full md:w-1/3 p-2 border rounded mb-4"
-        placeholder="Search..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+  {/* RIGHT: BUTTON */}
+  <button
+    onClick={() => router.push("/employees/add")}
+    className="bg-blue-600 text-white px-4 py-2 rounded-lg whitespace-nowrap"
+  >
+    + Add Employee
+  </button>
+
+</div>
 
       {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -149,7 +150,7 @@ export default function EmployeesPage() {
                 {/* STATUS */}
                 <td>
                   <span
-                    className={`px-2 py-1 rounded text-xs ${
+                    className={`px-2 py-1 rounded-xl text-xs ${
                       emp.status === "active"
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-600"
@@ -174,7 +175,7 @@ export default function EmployeesPage() {
                     onClick={() => handleDelete(emp._id)}
                     className="text-red-600"
                   >
-                    🗑
+                    <Trash size={18}/>
                   </button>
                 </td>
               </tr>
