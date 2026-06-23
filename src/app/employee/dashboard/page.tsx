@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DashboardData } from '@/types/dashboard';
 import AttendanceCalendar from '../../components/AttendanceCalendar';
 
 export default function DashboardPage() {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState< null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +18,7 @@ export default function DashboardPage() {
         }
 
         const response = await fetch(
-          'http://localhost:5000/employee/dashboard',
+          'https://ems-backend-lac.vercel.app/employee/dashboard',
           {
             method: 'GET',
             headers: {
@@ -36,7 +35,7 @@ export default function DashboardPage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: DashboardData = await response.json();
+        const data = await response.json();
         setDashboardData(data);
       } catch (err: any) {
         console.error('Dashboard fetch error:', err);

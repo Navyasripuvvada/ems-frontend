@@ -94,7 +94,7 @@ export default function AttendancePage() {
       setStatus("Submitting attendance...");
 
       const res = await api.post(
-        "http://localhost:5000/attendance/mark",
+        "https://ems-backend-lac.vercel.app/attendance/mark",
         {
           faceDescriptor: descriptor,
         },

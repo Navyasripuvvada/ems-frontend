@@ -28,7 +28,7 @@ export default function ApplyLeave() {
         if (!token) return;
 
         const response = await axios.get(
-          "http://localhost:5000/leave/leave-balance",
+          "https://ems-backend-lac.vercel.app/leave/leave-balance",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -93,7 +93,7 @@ export default function ApplyLeave() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:5000/leave/apply",
+        "https://ems-backend-lac.vercel.app/leave/apply",
         { fromDate, toDate, reason, subject },
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -34,7 +34,7 @@ export default function LeaveHistory() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/leave/my-leaves",
+          "https://ems-backend-lac.vercel.app/leave/my-leaves",
           {
             method: "GET",
             headers: {
@@ -142,7 +142,7 @@ export default function LeaveHistory() {
             ) : (
               leaveData.map((leave, index) => (
                 <tr key={leave.id ?? index} className="border-t">
-                  <td className="p-3">{leave.reason}</td>
+                  <td className="p-3">{leave?.Reason ||" "}</td>
                   <td className="p-3">{formatDate(leave.fromDate)}</td>
 <td className="p-3">{formatDate(leave.toDate)}</td>
                   <td className="p-3 text-center">{leave.days}</td>

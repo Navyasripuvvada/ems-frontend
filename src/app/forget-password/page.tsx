@@ -21,7 +21,7 @@ export default function ForgotPassword() {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/auth/forgot-password",
+        "https://ems-backend-lac.vercel.app/auth/forgot-password",
         { email }
       );
 

@@ -42,7 +42,7 @@ export default function EmployeeProfile() {
           : null;
 
       const res = await axios.get(
-        "http://localhost:5000/employee/profile",
+        "https://ems-backend-lac.vercel.app/employee/profile",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -71,7 +71,7 @@ export default function EmployeeProfile() {
       formData.append("profilePicture", file);
 
       const res = await axios.post(
-        "http://localhost:5000/employee/upload-profile-picture",
+        "https://ems-backend-lac.vercel.app/employee/upload-profile-picture",
         formData,
         {
           headers: {

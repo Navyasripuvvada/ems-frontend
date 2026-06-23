@@ -42,7 +42,7 @@ const STATUS = ['active', 'inactive', 'terminated'];
 
 
   export default function AddEmployeeForm() {
-  const API_URL = 'http://localhost:5000/admin/add-employee';
+  const API_URL = 'https://ems-backend-lac.vercel.app/admin/add-employee';
 
   const [loading, setLoading] = useState(false);
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye ,Trash } from "lucide-react";
 import { toast } from "sonner";
 
-const BASE_URL = "http://localhost:5000/admin";
+const BASE_URL = "https://ems-backend-lac.vercel.app/admin";
 
 /* ---------------- AUTH ---------------- */
 const getAuthHeader = () => {
@@ -91,7 +91,7 @@ const getImageUrl = (path?: string) => {
   }
 
   // If it's backend static file
-  return `http://localhost:5000${path}`;
+  return `https://ems-backend-lac.vercel.app/${path}`;
 };
 
   return (

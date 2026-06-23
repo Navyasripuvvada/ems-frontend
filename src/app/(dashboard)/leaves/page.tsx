@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import {toast} from "sonner";
 
-const BASE_URL = "http://localhost:5000/leave/admin";
+const BASE_URL = "https://ems-backend-lac.vercel.app/leave/admin";
 
 /* ---------------- AUTH HEADER ---------------- */
 const getAuthHeader = () => {

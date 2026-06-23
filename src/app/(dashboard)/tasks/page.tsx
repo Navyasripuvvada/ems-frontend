@@ -36,7 +36,7 @@ const token = localStorage.getItem("token");
   }
 
   const res = await axios.get(
-    "http://localhost:5000/attendance/all?limit=1000",
+    "https://ems-backend-lac.vercel.app/attendance/all?limit=1000",
     {
       headers: {
         Authorization: `Bearer ${token}`,

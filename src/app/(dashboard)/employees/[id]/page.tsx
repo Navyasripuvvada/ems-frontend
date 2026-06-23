@@ -32,7 +32,7 @@ export default function EditEmployeePage() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "https://ems-backend-lac.vercel.app";
 
   /* ================= FETCH ================= */
   useEffect(() => {
@@ -179,7 +179,7 @@ export default function EditEmployeePage() {
         ) : (
           <input
             name={name}
-            value={form[name]}
+            value={form[name] || ""}
             onChange={handleChange}
             className="border p-2 rounded w-full"
           />

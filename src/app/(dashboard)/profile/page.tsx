@@ -55,7 +55,7 @@ export default function EmployeeProfile() {
   const fetchEmployee = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/admin/employee/${EMPLOYEE_ID}`
+        `https://ems-backend-lac.vercel.app/admin/employee/${EMPLOYEE_ID}`
       );
       setEmployee(res.data);
     } catch (err) {
@@ -85,7 +85,7 @@ export default function EmployeeProfile() {
       setLoading(true);
 
       await axios.put(
-        `http://localhost:5000/admin/employee/${EMPLOYEE_ID}`,
+        `https://ems-backend-lac.vercel.app/admin/employee/${EMPLOYEE_ID}`,
         employee
       );
 
