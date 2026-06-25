@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 /* ---------------- CONFIG ---------------- */
-const BASE_URL = "http://localhost:5000/admin";
+const BASE_URL = "https://ems-backend-lac.vercel.app/admin";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
